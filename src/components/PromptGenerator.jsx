@@ -197,7 +197,8 @@ const PromptGenerator = () => {
 
       const result = await generateContent(prompt, { 
         image: selectedImage, 
-        model: modelMode 
+        model: modelMode,
+        apiKey: apiKey // Pass the user's API key if available
       });
       setOutput(result);
     } catch (error) {
@@ -211,13 +212,15 @@ const PromptGenerator = () => {
   // Obsidian & Settings State
   const [vaultName, setVaultName] = useState(() => localStorage.getItem('obsidian_vault_name') || 'My Vault');
   const [userName, setUserName] = useState(() => localStorage.getItem('user_name') || '');
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('user_api_key') || '');
   const [showSettings, setShowSettings] = useState(false);
 
-  // Persist Vault Name & User Name
+  // Persist Vault Name, User Name & API Key
   React.useEffect(() => {
     localStorage.setItem('obsidian_vault_name', vaultName);
     localStorage.setItem('user_name', userName);
-  }, [vaultName, userName]);
+    localStorage.setItem('user_api_key', apiKey);
+  }, [vaultName, userName, apiKey]);
 
 
   const handleSaveToObsidian = () => {
@@ -364,7 +367,27 @@ ${output}
                  />
                </div>
              </div>
-             <div className="text-xs text-gray-500">
+
+             <div>
+               <label className="block text-xs text-gray-400 mb-1 flex items-center gap-2">
+                 <span>Gemini API Key</span>
+                 <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-primary-400 hover:text-primary-300 underline text-[10px]">
+                   (키 발급받기 ↗)
+                 </a>
+               </label>
+               <input 
+                 type="password" 
+                 value={apiKey}
+                 onChange={(e) => setApiKey(e.target.value)}
+                 className="w-full bg-dark-surface border border-gray-700 rounded px-3 py-1.5 text-sm text-gray-200 focus:border-primary-500 outline-none font-mono"
+                 placeholder="여기에 API Key를 붙여넣으세요 (공란일 경우 기본 키 사용)"
+               />
+               <p className="text-[10px] text-gray-500 mt-1">
+                 * 입력하신 키는 브라우저에만 저장되며 서버로 전송되지 않습니다. 본인의 키를 사용하면 제한없이 이용 가능합니다.
+               </p>
+             </div>
+
+             <div className="text-xs text-gray-500 pt-2 border-t border-gray-800">
                * 옵시디언 앱이 설치되어 있어야 'Obsidian 저장' 기능을 사용할 수 있습니다.
              </div>
            </CardContent>

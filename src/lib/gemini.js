@@ -18,11 +18,14 @@ async function fileToGenerativePart(file) {
 }
 
 export async function generateContent(prompt, options = {}) {
-  if (!API_KEY) {
-    throw new Error("Gemini API Key is missing. Please add VITE_GEMINI_API_KEY to your .env file.");
+  // Use the provided API key from options, or fall back to the env variable
+  const activeApiKey = options.apiKey || API_KEY;
+
+  if (!activeApiKey) {
+    throw new Error("API Key가 없습니다. 설정에서 키를 입력하거나 .env 파일을 확인해주세요.");
   }
 
-  const genAI = new GoogleGenerativeAI(API_KEY);
+  const genAI = new GoogleGenerativeAI(activeApiKey);
   // Using gemini-2.0-flash-exp as per user's interest in latest models, falling back to 1.5-flash if needed
   // Note: For stability, we might use gemini-1.5-flash generally, but let's try a standard model first.
   // Using 'gemini-1.5-flash' for speed and cost-effectiveness for free tier.
