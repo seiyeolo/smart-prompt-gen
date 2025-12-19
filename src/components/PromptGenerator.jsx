@@ -3,8 +3,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { generateContent } from '../lib/gemini';
 import { Copy, RefreshCw, Zap, Wand2, Check, Layout, Users, Palette, ImageIcon, Layers, PenTool, Monitor, Settings } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/Button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/Card";
 
 // --- Option Constants with Korean Labels and English Values ---
 
