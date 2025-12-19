@@ -210,12 +210,14 @@ const PromptGenerator = () => {
 
   // Obsidian & Settings State
   const [vaultName, setVaultName] = useState(() => localStorage.getItem('obsidian_vault_name') || 'My Vault');
+  const [userName, setUserName] = useState(() => localStorage.getItem('user_name') || '');
   const [showSettings, setShowSettings] = useState(false);
 
-  // Persist Vault Name
+  // Persist Vault Name & User Name
   React.useEffect(() => {
     localStorage.setItem('obsidian_vault_name', vaultName);
-  }, [vaultName]);
+    localStorage.setItem('user_name', userName);
+  }, [vaultName, userName]);
 
 
   const handleSaveToObsidian = () => {
@@ -339,19 +341,31 @@ ${output}
       {/* Settings Panel */}
       {showSettings && (
         <Card className="border-gray-800 bg-dark-bg/50 mb-4 animate-in fade-in slide-in-from-top-2">
-           <CardContent className="p-4 flex items-center gap-4">
-             <div className="flex-1">
-               <label className="block text-xs text-gray-400 mb-1">Obsidian Vault Name</label>
-               <input 
-                 type="text" 
-                 value={vaultName}
-                 onChange={(e) => setVaultName(e.target.value)}
-                 className="w-full bg-dark-surface border border-gray-700 rounded px-3 py-1.5 text-sm text-gray-200 focus:border-primary-500 outline-none"
-                 placeholder="예: My Vault"
-               />
+           <CardContent className="p-4 flex flex-col gap-4">
+             <div className="flex gap-4">
+               <div className="flex-1">
+                 <label className="block text-xs text-gray-400 mb-1">사용자 이름 / 스튜디오명</label>
+                 <input 
+                   type="text" 
+                   value={userName}
+                   onChange={(e) => setUserName(e.target.value)}
+                   className="w-full bg-dark-surface border border-gray-700 rounded px-3 py-1.5 text-sm text-gray-200 focus:border-primary-500 outline-none"
+                   placeholder="예: 홍길동의 AI 파트너"
+                 />
+               </div>
+               <div className="flex-1">
+                 <label className="block text-xs text-gray-400 mb-1">Obsidian Vault Name</label>
+                 <input 
+                   type="text" 
+                   value={vaultName}
+                   onChange={(e) => setVaultName(e.target.value)}
+                   className="w-full bg-dark-surface border border-gray-700 rounded px-3 py-1.5 text-sm text-gray-200 focus:border-primary-500 outline-none"
+                   placeholder="예: My Vault"
+                 />
+               </div>
              </div>
-             <div className="text-xs text-gray-500 mt-5">
-               * 옵시디언 앱이 설치되어 있어야 합니다.
+             <div className="text-xs text-gray-500">
+               * 옵시디언 앱이 설치되어 있어야 'Obsidian 저장' 기능을 사용할 수 있습니다.
              </div>
            </CardContent>
         </Card>
@@ -363,7 +377,7 @@ ${output}
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Zap className="w-5 h-5 text-primary-400" />
-              스마트 프롬프트 빌더
+              {userName ? `${userName}` : '스마트 프롬프트 빌더'}
             </CardTitle>
             <select 
               className="px-3 py-1 rounded-md bg-dark-bg border border-gray-700 text-xs text-gray-400 focus:ring-1 focus:ring-primary-500 outline-none"
@@ -572,6 +586,12 @@ ${output}
           </CardFooter>
         </Card>
       )}
+      
+      {/* Footer Branding */}
+      <div className="text-center mt-12 pt-6 border-t border-gray-800 text-gray-600 text-xs">
+        <p>© {new Date().getFullYear()} {userName || 'Prompt Generator'}. All rights reserved.</p>
+        <p className="mt-1">Powered by Google Gemini</p>
+      </div>
     </div>
   );
 };
