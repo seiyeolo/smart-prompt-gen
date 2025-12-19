@@ -615,6 +615,14 @@ ${output}
         <p>© {new Date().getFullYear()} {userName || 'Prompt Generator'}. All rights reserved.</p>
         <p className="mt-1">Powered by Google Gemini</p>
       </div>
+
+      {/* Ad Placeholder (Monetization Slot) */}
+      <div className="max-w-4xl mx-auto mt-8 p-4 border border-dashed border-gray-800 rounded-lg text-center bg-dark-bg/30 hidden">
+        <p className="text-xs text-gray-600">Sponsored Ad Space</p>
+        <div className="h-24 flex items-center justify-center text-gray-700 text-sm">
+           광고 영역 (Google AdSense 등 연동 예정)
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,4 +1,6 @@
+import React from 'react';
 import PromptGenerator from './components/PromptGenerator';
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   return (
@@ -19,6 +21,7 @@ function App() {
           <p>© 2025 Antigravity AI. Powered by Nano Banana Architecture.</p>
         </footer>
       </div>
+      <Analytics />
     </div>
   )
 }
