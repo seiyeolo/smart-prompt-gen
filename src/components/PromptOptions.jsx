@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Users, Wand2, Palette, ImageIcon, PenTool, Layers, Monitor } from 'lucide-react';
+import { Layout, Users, Wand2, Palette, ImageIcon, PenTool, Layers, Monitor, Camera } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { 
   ASPECT_RATIOS, 
@@ -8,7 +8,8 @@ import {
   FORMAT_OPTIONS, 
   ART_STYLE_OPTIONS, 
   EXPRESSION_OPTIONS, 
-  USAGE_OPTIONS 
+  USAGE_OPTIONS,
+  ANGLE_OPTIONS
 } from '../constants';
 
 const ChipGroup = ({ title, icon: Icon, options, selected, onChange, multiSelect = false }) => {
@@ -72,6 +73,8 @@ const PromptOptions = ({
   setSelectedExpressions,
   selectedUsages,
   setSelectedUsages,
+  selectedAngles,
+  setSelectedAngles,
 }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -108,6 +111,15 @@ const PromptOptions = ({
           <Palette className="w-4 h-4 text-primary-400" />
           <h3 className="font-semibold text-gray-200 text-sm">스타일 (Style)</h3>
         </div>
+        
+        <ChipGroup 
+          title="카메라 앵글 & 구도 (Camera Angle)" 
+          icon={Camera}
+          options={ANGLE_OPTIONS} 
+          selected={selectedAngles} 
+          onChange={setSelectedAngles} 
+          multiSelect
+        />
         
         <ChipGroup 
           title="형식" 

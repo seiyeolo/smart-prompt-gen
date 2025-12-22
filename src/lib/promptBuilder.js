@@ -8,11 +8,13 @@ export function buildPrompt(options) {
     selectedExpressions, 
     selectedUsages, 
     selectedMoods, 
-    selectedImage 
+    selectedImage,
+    selectedAngles
   } = options;
 
   const subjectsStr = selectedSubjects.length > 0 ? selectedSubjects.join(', ') : '사용자 입력 참조';
   const moodsStr = selectedMoods.length > 0 ? selectedMoods.join(', ') : '사용자 입력 참조';
+  const anglesStr = selectedAngles.length > 0 ? selectedAngles.join(', ') : 'Not specified';
   
   const combinedStyles = [
     ...selectedFormats, 
@@ -32,6 +34,7 @@ export function buildPrompt(options) {
     - Subjects/Characters: ${subjectsStr}
     - Art Styles/Format: ${stylesStr}
     - Atmosphere/Mood: ${moodsStr}
+    - Camera Angle/Viewpoint: ${anglesStr}
     
     Task:
     Transform the Original User Input into a high-quality, descriptive **English** prompt optimized for image generation.

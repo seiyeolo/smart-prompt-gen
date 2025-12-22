@@ -25,6 +25,7 @@ const initialState = {
   selectedArtStyles: [],
   selectedExpressions: [],
   selectedUsages: [],
+  selectedAngles: [],
   vaultName: localStorage.getItem('obsidian_vault_name') || 'My Vault',
   userName: localStorage.getItem('user_name') || '',
   apiKey: sessionStorage.getItem('user_api_key') || '',
@@ -63,7 +64,7 @@ const PromptGenerator = () => {
   const {
     input, output, isLoading, modelMode, copied, error, aspectRatio,
     selectedSubjects, selectedMoods, selectedImage, previewUrl,
-    selectedFormats, selectedArtStyles, selectedExpressions, selectedUsages,
+    selectedFormats, selectedArtStyles, selectedExpressions, selectedUsages, selectedAngles,
     vaultName, userName, apiKey, showSettings, notionCopied, isDragging
   } = state;
 
@@ -81,7 +82,7 @@ const PromptGenerator = () => {
       const prompt = buildPrompt({
         input, aspectRatio, selectedSubjects, selectedFormats,
         selectedArtStyles, selectedExpressions, selectedUsages,
-        selectedMoods, selectedImage
+        selectedMoods, selectedImage, selectedAngles
       });
 
       const result = await generateContent(prompt, { 
@@ -241,6 +242,8 @@ ${output}
             setSelectedExpressions={(value) => dispatch({ type: 'SET_FIELD', field: 'selectedExpressions', value })}
             selectedUsages={selectedUsages}
             setSelectedUsages={(value) => dispatch({ type: 'SET_FIELD', field: 'selectedUsages', value })}
+            selectedAngles={selectedAngles}
+            setSelectedAngles={(value) => dispatch({ type: 'SET_FIELD', field: 'selectedAngles', value })}
           />
         </CardContent>
         <CardFooter className="flex justify-end bg-dark-surface/30 p-4">

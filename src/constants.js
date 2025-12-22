@@ -61,3 +61,17 @@ export const MOODS = [
   { label: '신비로운', value: 'Mysterious' },
   { label: '시네마틱', value: 'Cinematic' },
 ];
+
+export const ANGLE_OPTIONS = [
+  { label: '기본', value: 'Default' },
+  { label: '눈높이', value: 'Eye Level' },
+  { label: '로우 앵글', value: 'Low Angle' },
+  { label: '하이 앵글', value: 'High Angle' },
+  { label: '버즈 아이 뷰', value: "Bird's Eye View" },
+  { label: '웜즈 아이 뷰', value: "Worm's Eye View" },
+  { label: '광각', value: 'Wide Angle' },
+  { label: '망원', value: 'Telephoto' },
+  { label: '클로즈업', value: 'Close Up' },
+  { label: '매크로', value: 'Macro Photography' },
+  { label: '셀피', value: 'Selfie' },
+];
