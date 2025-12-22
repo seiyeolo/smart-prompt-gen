@@ -3,11 +3,34 @@ import PromptInput from './PromptInput';
 import PromptOptions from './PromptOptions';
 import PromptOutput from './PromptOutput';
 import SettingsPanel from './SettingsPanel';
+import PromptHistory from './PromptHistory';
+import PresetTemplates from './PresetTemplates';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/Card";
 import { Button } from "./ui/Button";
 import { Wand2, Zap } from 'lucide-react';
 import { generateContent } from '../lib/gemini';
 import { buildPrompt } from '../lib/promptBuilder';
+
+// 히스토리 관련 유틸리티 함수
+const HISTORY_KEY = 'prompt_history';
+const MAX_HISTORY = 50;
+
+const loadHistory = () => {
+  try {
+    const saved = localStorage.getItem(HISTORY_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveHistory = (history) => {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, MAX_HISTORY)));
+  } catch (e) {
+    console.error('Failed to save history:', e);
+  }
+};
 
 const initialState = {
   input: '',
@@ -33,7 +56,9 @@ const initialState = {
   showSettings: false,
   notionCopied: false,
   isDragging: false,
+  history: loadHistory(),
 };
+
 
 function reducer(state, action) {
   switch (action.type) {
@@ -49,16 +74,72 @@ function reducer(state, action) {
     }
     case 'START_GENERATION':
       return { ...state, isLoading: true, output: '', error: null };
-    case 'GENERATION_SUCCESS':
-      return { ...state, isLoading: false, output: action.output };
+    case 'GENERATION_SUCCESS': {
+      // 히스토리에 추가
+      const newHistoryItem = {
+        id: Date.now(),
+        timestamp: Date.now(),
+        input: state.input,
+        output: action.output,
+        model: state.modelMode,
+        options: {
+          aspectRatio: state.aspectRatio,
+          subjects: state.selectedSubjects,
+          moods: state.selectedMoods,
+          formats: state.selectedFormats,
+          artStyles: state.selectedArtStyles,
+          expressions: state.selectedExpressions,
+          usages: state.selectedUsages,
+          angles: state.selectedAngles,
+        }
+      };
+      const newHistory = [newHistoryItem, ...state.history].slice(0, MAX_HISTORY);
+      saveHistory(newHistory);
+      return { ...state, isLoading: false, output: action.output, history: newHistory };
+    }
     case 'GENERATION_ERROR':
       return { ...state, isLoading: false, error: action.error };
     case 'SET_IMAGE':
       return { ...state, selectedImage: action.file, previewUrl: action.url };
+    case 'DELETE_HISTORY': {
+      const newHistory = state.history.filter(item => item.id !== action.id);
+      saveHistory(newHistory);
+      return { ...state, history: newHistory };
+    }
+    case 'CLEAR_HISTORY':
+      saveHistory([]);
+      return { ...state, history: [] };
+    case 'LOAD_FROM_HISTORY':
+      return {
+        ...state,
+        input: action.item.input || '',
+        output: action.item.output,
+        aspectRatio: action.item.options?.aspectRatio || null,
+        selectedSubjects: action.item.options?.subjects || [],
+        selectedMoods: action.item.options?.moods || [],
+        selectedFormats: action.item.options?.formats || [],
+        selectedArtStyles: action.item.options?.artStyles || [],
+        selectedExpressions: action.item.options?.expressions || [],
+        selectedUsages: action.item.options?.usages || [],
+        selectedAngles: action.item.options?.angles || [],
+      };
+    case 'APPLY_PRESET':
+      return {
+        ...state,
+        aspectRatio: action.options.aspectRatio || null,
+        selectedSubjects: action.options.selectedSubjects || [],
+        selectedMoods: action.options.selectedMoods || [],
+        selectedFormats: action.options.selectedFormats || [],
+        selectedArtStyles: action.options.selectedArtStyles || [],
+        selectedExpressions: action.options.selectedExpressions || [],
+        selectedUsages: action.options.selectedUsages || [],
+        selectedAngles: action.options.selectedAngles || [],
+      };
     default:
       return state;
   }
 }
+
 
 const PromptGenerator = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -66,7 +147,7 @@ const PromptGenerator = () => {
     input, output, isLoading, modelMode, copied, error, aspectRatio,
     selectedSubjects, selectedMoods, selectedImage, previewUrl,
     selectedFormats, selectedArtStyles, selectedExpressions, selectedUsages, selectedAngles,
-    vaultName, userName, apiKey, saveApiKey, showSettings, notionCopied, isDragging
+    vaultName, userName, apiKey, saveApiKey, showSettings, notionCopied, isDragging, history
   } = state;
 
   const fileInputRef = useRef(null);
@@ -135,6 +216,24 @@ const PromptGenerator = () => {
     }
   };
 
+  // 히스토리 핸들러
+  const handleHistorySelect = (item) => {
+    dispatch({ type: 'LOAD_FROM_HISTORY', item });
+  };
+
+  const handleHistoryDelete = (id) => {
+    dispatch({ type: 'DELETE_HISTORY', id });
+  };
+
+  const handleHistoryClear = () => {
+    dispatch({ type: 'CLEAR_HISTORY' });
+  };
+
+  // 프리셋 핸들러
+  const handleApplyPreset = (options) => {
+    dispatch({ type: 'APPLY_PRESET', options });
+  };
+
   const handleSaveToObsidian = () => {
     if (!output) return;
     const date = new Date().toISOString().split('T')[0];
@@ -169,7 +268,7 @@ ${output}
       container.style.wordBreak = 'break-word';
       container.style.padding = '20px';
       container.style.fontFamily = 'monospace';
-      container.textContent = output; // Safe against XSS
+      container.textContent = output;
       newWindow.document.body.appendChild(container);
     }
   };
@@ -188,6 +287,7 @@ ${output}
     dispatch({ type: 'SET_FIELD', field: 'notionCopied', value: true });
     setTimeout(() => dispatch({ type: 'SET_FIELD', field: 'notionCopied', value: false }), 3000);
   };
+
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
@@ -241,6 +341,22 @@ ${output}
             setPreviewUrl={(url) => dispatch({ type: 'SET_FIELD', field: 'previewUrl', value: url })}
             fileInputRef={fileInputRef}
           />
+          
+          {/* 프리셋 템플릿 */}
+          <PresetTemplates
+            onApplyPreset={handleApplyPreset}
+            currentOptions={{
+              aspectRatio,
+              selectedSubjects,
+              selectedMoods,
+              selectedFormats,
+              selectedArtStyles,
+              selectedExpressions,
+              selectedUsages,
+              selectedAngles,
+            }}
+          />
+          
           <PromptOptions
             aspectRatio={aspectRatio}
             setAspectRatio={(value) => dispatch({ type: 'SET_FIELD', field: 'aspectRatio', value })}
@@ -292,6 +408,14 @@ ${output}
         handleGenerate={handleGenerate}
         handleCopy={handleCopy}
         handleCopyToNotion={handleCopyToNotion}
+      />
+
+      {/* 히스토리 섹션 */}
+      <PromptHistory
+        history={history}
+        onSelect={handleHistorySelect}
+        onDelete={handleHistoryDelete}
+        onClear={handleHistoryClear}
       />
       
       <div className="text-center mt-12 pt-6 border-t border-gray-800 text-gray-600 text-xs">
