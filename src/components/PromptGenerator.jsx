@@ -28,7 +28,8 @@ const initialState = {
   selectedAngles: [],
   vaultName: localStorage.getItem('obsidian_vault_name') || 'My Vault',
   userName: localStorage.getItem('user_name') || '',
-  apiKey: sessionStorage.getItem('user_api_key') || '',
+  apiKey: localStorage.getItem('user_api_key') || sessionStorage.getItem('user_api_key') || '',
+  saveApiKey: !!localStorage.getItem('user_api_key'),
   showSettings: false,
   notionCopied: false,
   isDragging: false,
@@ -65,7 +66,7 @@ const PromptGenerator = () => {
     input, output, isLoading, modelMode, copied, error, aspectRatio,
     selectedSubjects, selectedMoods, selectedImage, previewUrl,
     selectedFormats, selectedArtStyles, selectedExpressions, selectedUsages, selectedAngles,
-    vaultName, userName, apiKey, showSettings, notionCopied, isDragging
+    vaultName, userName, apiKey, saveApiKey, showSettings, notionCopied, isDragging
   } = state;
 
   const fileInputRef = useRef(null);
@@ -73,8 +74,19 @@ const PromptGenerator = () => {
   useEffect(() => {
     localStorage.setItem('obsidian_vault_name', vaultName);
     localStorage.setItem('user_name', userName);
-    if (apiKey) sessionStorage.setItem('user_api_key', apiKey);
-  }, [vaultName, userName, apiKey]);
+    
+    if (saveApiKey) {
+      if (apiKey) {
+        localStorage.setItem('user_api_key', apiKey);
+        sessionStorage.setItem('user_api_key', apiKey);
+      }
+    } else {
+      localStorage.removeItem('user_api_key');
+      if (apiKey) {
+        sessionStorage.setItem('user_api_key', apiKey);
+      }
+    }
+  }, [vaultName, userName, apiKey, saveApiKey]);
 
   const handleGenerate = async () => {
     dispatch({ type: 'START_GENERATION' });
@@ -188,6 +200,8 @@ ${output}
         setVaultName={(value) => dispatch({ type: 'SET_FIELD', field: 'vaultName', value })}
         apiKey={apiKey}
         setApiKey={(value) => dispatch({ type: 'SET_FIELD', field: 'apiKey', value })}
+        saveApiKey={saveApiKey}
+        setSaveApiKey={(value) => dispatch({ type: 'SET_FIELD', field: 'saveApiKey', value })}
       />
 
       <Card className="border-primary-500/20 shadow-primary-500/5 overflow-hidden">

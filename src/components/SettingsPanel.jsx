@@ -10,7 +10,9 @@ const SettingsPanel = ({
   vaultName,
   setVaultName,
   apiKey,
-  setApiKey
+  setApiKey,
+  saveApiKey,
+  setSaveApiKey
 }) => {
   if (!showSettings) {
     return (
@@ -73,11 +75,27 @@ const SettingsPanel = ({
                type="password" 
                value={apiKey}
                onChange={(e) => setApiKey(e.target.value)}
-               className="w-full bg-dark-surface border border-gray-700 rounded px-3 py-1.5 text-sm text-gray-200 focus:border-primary-500 outline-none font-mono"
+               className="w-full bg-dark-surface border border-gray-700 rounded px-3 py-1.5 text-sm text-gray-200 focus:border-primary-500 outline-none font-mono mb-2"
                placeholder="이곳에 Gemini API Key를 붙여넣으세요"
              />
-             <p className="text-[10px] text-gray-500 mt-1">
-               ⚠️ 보안 안내: API 키는 이 브라우저 세션에만 저장되며, <strong className="text-yellow-500">브라우저 종료 시 자동 삭제</strong>됩니다. 서버로 전송되지 않습니다.
+             
+             <div className="flex items-center gap-2 mb-1">
+               <input 
+                 type="checkbox" 
+                 id="saveApiKey"
+                 checked={saveApiKey}
+                 onChange={(e) => setSaveApiKey(e.target.checked)}
+                 className="rounded border-gray-700 bg-dark-surface text-primary-500 focus:ring-primary-500/50"
+               />
+               <label htmlFor="saveApiKey" className="text-xs text-gray-400 cursor-pointer select-none">
+                 API 키를 이 기기에 저장 (브라우저를 닫아도 유지됨)
+               </label>
+             </div>
+
+             <p className="text-[10px] text-gray-500">
+               {saveApiKey 
+                 ? "✅ API 키가 로컬 스토리지에 암호화되지 않은 상태로 저장됩니다. 공용 컴퓨터에서는 사용하지 마세요."
+                 : "🔒 보안 모드: API 키는 브라우저 종료 시 삭제됩니다."}
              </p>
            </div>
 
