@@ -230,17 +230,17 @@ ${output}
             aspectRatio={aspectRatio}
             setAspectRatio={(value) => dispatch({ type: 'SET_FIELD', field: 'aspectRatio', value })}
             selectedSubjects={selectedSubjects}
-            setSelectedSubjects={(value) => dispatch({ type: 'SET_MULTI_SELECT', field: 'selectedSubjects', value })}
+            setSelectedSubjects={(value) => dispatch({ type: 'SET_FIELD', field: 'selectedSubjects', value })}
             selectedMoods={selectedMoods}
-            setSelectedMoods={(value) => dispatch({ type: 'SET_MULTI_SELECT', field: 'selectedMoods', value })}
+            setSelectedMoods={(value) => dispatch({ type: 'SET_FIELD', field: 'selectedMoods', value })}
             selectedFormats={selectedFormats}
-            setSelectedFormats={(value) => dispatch({ type: 'SET_MULTI_SELECT', field: 'selectedFormats', value })}
+            setSelectedFormats={(value) => dispatch({ type: 'SET_FIELD', field: 'selectedFormats', value })}
             selectedArtStyles={selectedArtStyles}
-            setSelectedArtStyles={(value) => dispatch({ type: 'SET_MULTI_SELECT', field: 'selectedArtStyles', value })}
+            setSelectedArtStyles={(value) => dispatch({ type: 'SET_FIELD', field: 'selectedArtStyles', value })}
             selectedExpressions={selectedExpressions}
-            setSelectedExpressions={(value) => dispatch({ type: 'SET_MULTI_SELECT', field: 'selectedExpressions', value })}
+            setSelectedExpressions={(value) => dispatch({ type: 'SET_FIELD', field: 'selectedExpressions', value })}
             selectedUsages={selectedUsages}
-            setSelectedUsages={(value) => dispatch({ type: 'SET_MULTI_SELECT', field: 'selectedUsages', value })}
+            setSelectedUsages={(value) => dispatch({ type: 'SET_FIELD', field: 'selectedUsages', value })}
           />
         </CardContent>
         <CardFooter className="flex justify-end bg-dark-surface/30 p-4">
