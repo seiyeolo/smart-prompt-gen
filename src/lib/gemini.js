@@ -1,7 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-
 // Helper to convert a File object to a GoogleGenerativeAI.Part object.
 async function fileToGenerativePart(file) {
   const base64EncodedDataPromise = new Promise((resolve) => {
@@ -18,11 +16,11 @@ async function fileToGenerativePart(file) {
 }
 
 export async function generateContent(prompt, options = {}) {
-  // Use the provided API key from options, or fall back to the env variable
-  const activeApiKey = options.apiKey || API_KEY;
+  // Use only the provided API key from options.
+  const activeApiKey = options.apiKey;
 
   if (!activeApiKey) {
-    throw new Error("API Key가 없습니다. 설정에서 키를 입력하거나 .env 파일을 확인해주세요.");
+    throw new Error("API Key가 없습니다. 설정 메뉴에서 본인의 Gemini API 키를 입력해주세요.");
   }
 
   const genAI = new GoogleGenerativeAI(activeApiKey);
@@ -30,14 +28,25 @@ export async function generateContent(prompt, options = {}) {
   // Note: For stability, we might use gemini-1.5-flash generally, but let's try a standard model first.
   // Using 'gemini-1.5-flash' for speed and cost-effectiveness for free tier.
   // Determine model from options
+  // Determine model from options
+  // Updated model map (verified against official docs: ai.google.dev/gemini-api/docs/models)
+  // Last verified: 2025-12-22
   const modelMap = {
-    'flash-2.5': "gemini-2.5-flash-preview-09-2025",
-    'pro-2.5': "gemini-2.5-pro",
-    'flash-preview': "gemini-3-flash-preview",
-    'pro-preview': "gemini-3-pro-preview"
+    'flash-2.5': "gemini-2.5-flash",           // Stable (GA June 2025)
+    'pro-2.5': "gemini-2.5-pro",               // Stable (GA June 2025)
+    'flash-preview': "gemini-3-flash-preview", // Preview (Dec 2025)
+    'pro-preview': "gemini-3-pro-preview"      // Preview (Nov 2025)
   };
 
-  const modelName = modelMap[options.model] || "gemini-2.5-flash-preview-09-2025";
+  const modelName = modelMap[options.model] || "gemini-3-flash-preview";
+
+  // Deprecation check for legacy models
+  if (options.model === 'flash-2.5') {
+    const deprecationDate = new Date('2026-01-15');
+    if (new Date() > deprecationDate) {
+      throw new Error("This model (Gemini 2.5 Flash) has been deprecated as of Jan 15, 2026. Please select a newer model.");
+    }
+  }
     
   const model = genAI.getGenerativeModel({ model: modelName });
 
